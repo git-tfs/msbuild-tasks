@@ -5,6 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitTfsTasks", "GitTfsTasks\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C91E2A0-5080-4C0A-842F-FD6B7A71DC7E}"
 	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
 		release.proj = release.proj
 	EndProjectSection
 EndProject
