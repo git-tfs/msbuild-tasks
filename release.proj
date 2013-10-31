@@ -25,6 +25,9 @@
     
     <!-- The version tag. -->
     <VersionTag>v$(Version)</VersionTag>
+
+    <!-- Where the MSBuildCommunityTasks live -->
+    <MSBuildCommunityTasksLib>$(SolutionDir)\packages\MSBuildTasks.1.4.0.61\tools\MSBuild.Community.Tasks.dll</MSBuildCommunityTasksLib>
   </PropertyGroup>
 
   <!-- Files that go into the zip. -->
