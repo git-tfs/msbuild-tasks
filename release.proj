@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<Project ToolsVersion="4.0" DefaultTargets="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- Where to push the release tag. -->
+    <PushUrl>https://github.com/git-tfs/GitHubTasks.git</PushUrl>
+    
+    <!-- Where the solution lives, relative to this file. -->
+    <SolutionDir>.</SolutionDir>
+    
+    <!-- Where GitHubTasks.dll and its dependencies are built to. -->
+    <BuildDir>$(SolutionDir)/GitHubTasks/bin/Release</BuildDir>
+    
+    <!-- Yo. -->
+    <TargetPlatform>AnyCPU</TargetPlatform>
+    
+    <!-- The file that includes the AssemblyVersionAttribute. -->
+    <VersionFilePath>$(SolutionDir)\Version.cs</VersionFilePath>
+
+    <!-- Where to build the release zip file. -->
+    <PackagedDir>$(SolutionDir)/Releases</PackagedDir>
+
+    <!-- The output zip file. -->
+    <Archive>$(PackagedDir)/GitHubTasks-$(Version).zip</Archive>
+    
+    <!-- The version tag. -->
+    <VersionTag>v$(Version)</VersionTag>
+  </PropertyGroup>
+
+  <!-- Files that go into the zip. -->
+  <ItemGroup>
+    <ReleaseFiles Include="$(SolutionDir)\README.md" />
+    <ReleaseFiles Include="$(SolutionDir)\LICENSE" />
+    <ReleaseFiles Include="$(SolutionDir)\NOTICE" />
+    <ReleaseFiles Include="$(BuildDir)\*.dll" />
+  </ItemGroup>
+  
+  <!-- The zip. -->
+  <ItemGroup>
+    <ArchiveFile Include="$(Archive)">
+      <ContentType>application/zip</ContentType>
+    </ArchiveFile>
+  </ItemGroup>
+
+  <!-- Internal: Load some extra tasks. -->
+  <Target Name="MSBuildCommunityTasks"></Target><!-- pseudo-target so we can track things that use MSBuildTasks -->
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.TemplateFile" />
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Zip" />
+  
+  <!-- Internal: Build and load the GitHub CreateRelease task. -->
+  <Target Name="GitHubTasks" DependsOnTargets="Build"></Target><!-- Normally, you'd just load it from the dll, without needing to build it too. -->
+  <UsingTask TaskName="GitHubTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitHubTasks\bin\Release\GitHubTasks.dll" />
+
+  <!-- Public: Show the howto by default. -->
+  <Target Name="Help">
+    <Message Text="Usage: msbuild release.proj /t:Release /p:Version=0.0.1 /p:ReleaseNotes=releasenotes-0.0.1.md" />
+  </Target>
+
+  <!-- Public: Build the release. -->
+  <Target Name="Release" DependsOnTargets="UpdateVersion; Build; TagSource; PushSource; Package; CreateRelease">
+  </Target>
+
+  <!-- Internal: Called by Release to set the new version. -->
+  <Target Name="UpdateVersion" DependsOnTargets="VersionRequired">
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="partial class GitHubTasksProperties ; { ; public const string Version = %22$(Version)%22%3B ; }" Overwrite="true" Encoding="ASCII"/>
+    <Exec Command="git add $(VersionFilePath)" />
+    <Exec Command="git commit -m $(VersionTag)" />
+  </Target>
+
+  <!-- Internal: Called by Release to build a release version of git-tfs.exe -->
+  <Target Name="Build">
+    <MSBuild Projects="GitHubTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
+  </Target>
+
+  <!-- Internal: Called by Release to tag the git-tfs repository. -->
+  <Target Name="TagSource" DependsOnTargets="VersionRequired">
+    <Exec Command="git tag $(VersionTag)" />
+  </Target>
+
+  <!-- Internal: Called by Release to push the release tag to GitHub. -->
+  <Target Name="PushSource" DependsOnTargets="VersionRequired">
+    <Exec Command="git push $(PushUrl) master $(VersionTag)" />
+  </Target>
+
+  <!-- Internal: Called by Release to create the zip archive. -->
+  <Target Name="Package" DependsOnTargets="VersionRequired; MSBuildCommunityTasks">
+    <Zip Files="@(ReleaseFiles)" ZipFileName="$(Archive)" WorkingDirectory="$(BuildDir)" />
+  </Target>
+  
+  <!-- Internal: Called by Release to create the release on github.com. -->
+  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; GitHubTasks">
+    <CreateRelease TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" />
+  </Target>
+
+  <!-- Private: Exits with error when the Version property is not defined. -->
+  <Target Name="VersionRequired">
+    <Error Text="You must specify a version number! (/p:Version=X.Y.Z)" Condition="'$(Version)' == ''" />
+  </Target>
+
+</Project>
