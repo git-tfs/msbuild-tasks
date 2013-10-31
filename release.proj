@@ -12,7 +12,7 @@
     <BuildDir>$(SolutionDir)/GitTfsTasks/bin/Release</BuildDir>
     
     <!-- Yo. -->
-    <TargetPlatform>AnyCPU</TargetPlatform>
+    <TargetPlatform>Any CPU</TargetPlatform>
     
     <!-- The file that includes the AssemblyVersionAttribute. -->
     <VersionFilePath>$(SolutionDir)\GitTfsTasks\Properties\Version.cs</VersionFilePath>
@@ -72,7 +72,7 @@
 
   <!-- Internal: Called by Release to build a release version of git-tfs.exe -->
   <Target Name="Build">
-    <MSBuild Projects="GitTfsTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
+    <MSBuild Projects="$(SolutionDir)\GitTfsTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
   </Target>
 
   <!-- Internal: Called by Release to tag the git-tfs repository. -->
