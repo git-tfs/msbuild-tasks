@@ -7,8 +7,8 @@
     <ProjectGuid>{B6840CCA-B1B1-46FD-87D5-A7F9D4736D61}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GitHubTasks</RootNamespace>
-    <AssemblyName>GitHubTasks</AssemblyName>
+    <RootNamespace>GitTfsTasks</RootNamespace>
+    <AssemblyName>GitTfsTasks</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

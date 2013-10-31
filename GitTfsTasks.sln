@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubTasks", "GitHubTasks\GitHubTasks.csproj", "{B6840CCA-B1B1-46FD-87D5-A7F9D4736D61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitTfsTasks", "GitTfsTasks\GitTfsTasks.csproj", "{B6840CCA-B1B1-46FD-87D5-A7F9D4736D61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C91E2A0-5080-4C0A-842F-FD6B7A71DC7E}"
 	ProjectSection(SolutionItems) = preProject

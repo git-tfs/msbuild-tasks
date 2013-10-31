@@ -3,25 +3,25 @@
 
   <PropertyGroup>
     <!-- Where to push the release tag. -->
-    <PushUrl>https://github.com/git-tfs/GitHubTasks.git</PushUrl>
+    <PushUrl>https://github.com/git-tfs/msbuild-tasks.git</PushUrl>
     
     <!-- Where the solution lives, relative to this file. -->
     <SolutionDir>.</SolutionDir>
     
-    <!-- Where GitHubTasks.dll and its dependencies are built to. -->
-    <BuildDir>$(SolutionDir)/GitHubTasks/bin/Release</BuildDir>
+    <!-- Where the build output and its dependencies are built to. -->
+    <BuildDir>$(SolutionDir)/GitTfsTasks/bin/Release</BuildDir>
     
     <!-- Yo. -->
     <TargetPlatform>AnyCPU</TargetPlatform>
     
     <!-- The file that includes the AssemblyVersionAttribute. -->
-    <VersionFilePath>$(SolutionDir)\GitHubTasks\Properties\Version.cs</VersionFilePath>
+    <VersionFilePath>$(SolutionDir)\GitTfsTasks\Properties\Version.cs</VersionFilePath>
 
     <!-- Where to build the release zip file. -->
     <PackagedDir>$(SolutionDir)/Releases</PackagedDir>
 
     <!-- The output zip file. -->
-    <Archive>$(PackagedDir)/GitHubTasks-$(Version).zip</Archive>
+    <Archive>$(PackagedDir)/GitTfsTasks-$(Version).zip</Archive>
     
     <!-- The version tag. -->
     <VersionTag>v$(Version)</VersionTag>
@@ -50,9 +50,9 @@
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.TemplateFile" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Zip" />
   
-  <!-- Internal: Build and load the GitHub CreateRelease task. -->
-  <Target Name="GitHubTasks" DependsOnTargets="Build"></Target><!-- Normally, you'd just load it from the dll, without needing to build it too. -->
-  <UsingTask TaskName="GitHubTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitHubTasks\bin\Release\GitHubTasks.dll" />
+  <!-- Internal: Build and load the CreateRelease task. -->
+  <Target Name="GitTfsTasks" DependsOnTargets="Build"></Target><!-- Normally, you'd just load it from the dll, without needing to build it too. -->
+  <UsingTask TaskName="GitTfsTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitTfsTasks\bin\Release\GitTfsTasks.dll" />
 
   <!-- Public: Show the howto by default. -->
   <Target Name="Help">
@@ -65,14 +65,14 @@
 
   <!-- Internal: Called by Release to set the new version. -->
   <Target Name="UpdateVersion" DependsOnTargets="VersionRequired">
-    <WriteLinesToFile File="$(VersionFilePath)" Lines="partial class GitHubTasksProperties ; { ; public const string Version = %22$(Version)%22%3B ; }" Overwrite="true" Encoding="ASCII"/>
+    <WriteLinesToFile File="$(VersionFilePath)" Lines="partial class GitTfsTasksProperties ; { ; public const string Version = %22$(Version)%22%3B ; }" Overwrite="true" Encoding="ASCII"/>
     <Exec Command="git add $(VersionFilePath)" />
     <Exec Command="git commit -m $(VersionTag)" />
   </Target>
 
   <!-- Internal: Called by Release to build a release version of git-tfs.exe -->
   <Target Name="Build">
-    <MSBuild Projects="GitHubTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
+    <MSBuild Projects="GitTfsTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
   </Target>
 
   <!-- Internal: Called by Release to tag the git-tfs repository. -->
@@ -91,7 +91,7 @@
   </Target>
   
   <!-- Internal: Called by Release to create the release on github.com. -->
-  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; GitHubTasks">
+  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; GitTfsTasks">
     <CreateRelease TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" />
   </Target>
 

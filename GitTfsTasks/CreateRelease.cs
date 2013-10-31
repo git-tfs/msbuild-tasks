@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Headers;
-//using System.Net.Http;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Octokit;
 
-namespace GitHubTasks
+namespace GitTfsTasks
 {
     /// <summary>
     /// Create a release on github.com.
@@ -50,7 +49,7 @@ namespace GitHubTasks
 
         public override bool Execute()
         {
-            var client = new GitHubClient(new ProductHeaderValue("GitHubTasks")).Release;
+            var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks")).Release;
             var release = client.CreateRelease(Owner, RepositoryName, ReleaseData).Result;
             Log.LogMessage("Created Release {0} at {1}", release.Id, release.HtmlUrl);
             var assetTasks = new List<System.Threading.Tasks.Task<ReleaseAsset>>();
