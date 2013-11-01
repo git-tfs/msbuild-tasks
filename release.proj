@@ -8,8 +8,11 @@
     <!-- Where the solution lives, relative to this file. -->
     <SolutionDir>.</SolutionDir>
 
+    <!-- Normally, we build in release mode. We might want to build in debug mode, e.g. to debug. -->
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+
     <!-- Where the build output and its dependencies are built to. -->
-    <BuildDir>$(SolutionDir)/GitTfsTasks/bin/Release</BuildDir>
+    <BuildDir>$(SolutionDir)/GitTfsTasks/bin/$(Configuration)</BuildDir>
 
     <!-- Yo. -->
     <TargetPlatform>Any CPU</TargetPlatform>
@@ -52,7 +55,7 @@
 
   <!-- Internal: Build and load the CreateRelease task. -->
   <Target Name="GitTfsTasks" DependsOnTargets="Build"></Target><!-- Normally, you'd just load it from the dll, without needing to build it too. -->
-  <UsingTask TaskName="GitTfsTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitTfsTasks\bin\Release\GitTfsTasks.dll" />
+  <UsingTask TaskName="GitTfsTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitTfsTasks\bin\$(Configuration)\GitTfsTasks.dll" />
 
   <!-- Public: Show the howto by default. -->
   <Target Name="Help">
@@ -72,7 +75,7 @@
 
   <!-- Internal: Called by Release to build a release version of git-tfs.exe -->
   <Target Name="Build">
-    <MSBuild Projects="$(SolutionDir)\GitTfsTasks.sln" Targets="Rebuild" Properties="Configuration=Release;Platform=$(TargetPlatform);WarningLevel=0" />
+    <MSBuild Projects="$(SolutionDir)\GitTfsTasks.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=$(TargetPlatform);WarningLevel=0" />
   </Target>
 
   <!-- Internal: Called by Release to tag the git-tfs repository. -->
