@@ -63,7 +63,7 @@
   </Target>
 
   <!-- Public: Build the release. -->
-  <Target Name="Release" DependsOnTargets="UpdateVersion; Build; TagSource; PushSource; Package; CreateRelease">
+  <Target Name="Release" DependsOnTargets="UpdateVersion; Build; TagSource; PushSource; Package; UploadToGitHub">
   </Target>
 
   <!-- Internal: Called by Release to set the new version. -->
@@ -94,7 +94,7 @@
   </Target>
 
   <!-- Internal: Called by Release to create the release on github.com. -->
-  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; AuthTokenRequired; GitTfsTasks">
+  <Target Name="UploadToGitHub" DependsOnTargets="VersionRequired; AuthTokenRequired; GitTfsTasks">
     <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" UploadedAssets="@(UploadedAssets)" />
     <Message Text="@(UploadedAssets)" />
   </Target>
