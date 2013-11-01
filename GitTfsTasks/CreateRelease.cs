@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -70,21 +71,20 @@ namespace GitTfsTasks
             var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks"), CredentialStore).Release;
             var release = client.CreateRelease(Owner, RepositoryName, ReleaseData).Result;
             Log.LogMessage("Created Release {0} at {1}", release.Id, release.HtmlUrl);
-            var assetTasks = new List<System.Threading.Tasks.Task<ReleaseAsset>>();
-            foreach (var item in Files)
-            {
-                Log.LogMessage("Uploading {0}...", item.ItemSpec);
-                assetTasks.Add(client.UploadAsset(release, BuildAssetUpload(item)));
-            }
-            var uploadedAssets = new List<ITaskItem>();
-            foreach (var assetTask in assetTasks)
-            {
-                var asset = assetTask.Result;
-                Log.LogMessage("{0} was uploaded.", asset.Url);
-                uploadedAssets.Add(TaskItemFor(asset));
-            }
-            UploadedAssets = uploadedAssets.ToArray();
+            UploadedAssets = UploadAll(client, release, Files);
+            foreach (var item in UploadedAssets) Log.LogMessage("Uploaded {0}", item.ItemSpec);
             return true;
+        }
+
+        private ITaskItem[] UploadAll(IReleasesClient client, Release release, IEnumerable<ITaskItem> items)
+        {
+            return items.Select(item => { Log.LogMessage("Uploading {0}..."); return Upload(client, release, item).Result; }).ToArray();
+        }
+
+        private async System.Threading.Tasks.Task<ITaskItem> Upload(IReleasesClient client, Release release, ITaskItem sourceItem)
+        {
+            var uploadedAsset = await client.UploadAsset(release, BuildAssetUpload(sourceItem));
+            return TaskItemFor(release, uploadedAsset);
         }
 
         private ReleaseAssetUpload BuildAssetUpload(ITaskItem item)
@@ -97,7 +97,7 @@ namespace GitTfsTasks
             return data;
         }
 
-        private ITaskItem TaskItemFor(ReleaseAsset asset)
+        private ITaskItem TaskItemFor(Release release, ReleaseAsset asset)
         {
             var item = new TaskItem();
             item.ItemSpec = asset.Url;
