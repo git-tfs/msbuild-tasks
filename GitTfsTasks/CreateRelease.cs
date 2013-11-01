@@ -100,7 +100,9 @@ namespace GitTfsTasks
         private ITaskItem TaskItemFor(Release release, ReleaseAsset asset)
         {
             var item = new TaskItem();
-            item.ItemSpec = asset.Url;
+            // I don't think there's a way, via the API, to get something like this:
+            // https://github.com/git-tfs/msbuild-tasks/releases/download/v0.0.9/GitTfsTasks-0.0.9.zip
+            item.ItemSpec = "https://github.com/" + Repository + "/releases/download/" + TagName + "/" + asset.Name;
             item.MaybeSetMetadata("ContentType", asset.ContentType);
             item.MaybeSetMetadata("Id", asset.Id.ToString());
             item.MaybeSetMetadata("Label", asset.Label);
