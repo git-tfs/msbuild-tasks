@@ -101,11 +101,11 @@ namespace GitTfsTasks
         {
             var item = new TaskItem();
             item.ItemSpec = asset.Url;
-            item.SetMetadata("ContentType", asset.ContentType);
-            item.SetMetadata("Id", asset.Id.ToString());
-            item.SetMetadata("Label", asset.Label);
-            item.SetMetadata("Name", asset.Name);
-            item.SetMetadata("State", asset.State);
+            item.MaybeSetMetadata("ContentType", asset.ContentType);
+            item.MaybeSetMetadata("Id", asset.Id.ToString());
+            item.MaybeSetMetadata("Label", asset.Label);
+            item.MaybeSetMetadata("Name", asset.Name);
+            item.MaybeSetMetadata("State", asset.State);
             return item;
         }
     }
