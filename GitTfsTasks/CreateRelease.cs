@@ -90,7 +90,7 @@ namespace GitTfsTasks
             var release = new ReleaseUpdate(TagName);
             if (ReleaseNotesFile != null)
             {
-                release.Description = File.ReadAllText(ReleaseNotesFile);
+                release.Body = File.ReadAllText(ReleaseNotesFile);
             }
             return release;
         }
