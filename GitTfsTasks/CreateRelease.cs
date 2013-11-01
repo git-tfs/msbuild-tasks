@@ -40,7 +40,7 @@ namespace GitTfsTasks
 
         public ITaskItem[] Files { get; set; }
 
-        public ITaskItem ReleaseNotesFile { get; set; }
+        public string ReleaseNotesFile { get; set; }
 
         [Output]
         public ITaskItem[] UploadedAssets { get; private set; }
@@ -90,7 +90,7 @@ namespace GitTfsTasks
             var release = new ReleaseUpdate(TagName);
             if (ReleaseNotesFile != null)
             {
-                release.Description = File.ReadAllText(ReleaseNotesFile.ItemSpec);
+                release.Description = File.ReadAllText(ReleaseNotesFile);
             }
             return release;
         }
