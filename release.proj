@@ -95,8 +95,10 @@
 
   <!-- Internal: Called by Release to create the release on github.com. -->
   <Target Name="UploadToGitHub" DependsOnTargets="VersionRequired; AuthTokenRequired; GitTfsTasks">
-    <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" UploadedAssets="@(UploadedAssets)" />
-    <Message Text="@(UploadedAssets)" />
+    <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)">
+      <Output TaskParameter="UploadedAssets" ItemName="UploadedAssets" />
+    </CreateRelease>
+    <Message Text="yes! -> @(UploadedAssets)" />
   </Target>
 
   <!-- Private: Exits with error when the Version property is not defined. -->
