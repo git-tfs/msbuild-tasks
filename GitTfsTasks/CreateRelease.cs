@@ -64,13 +64,11 @@ namespace GitTfsTasks
             }
         }
 
-        private ReleaseUpdate ReleaseData { get { return new ReleaseUpdate(TagName); } }
-
         public override bool Execute()
         {
             var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks"), CredentialStore).Release;
-            var release = client.CreateRelease(Owner, RepositoryName, ReleaseData).Result;
-            Log.LogMessage("Created Release {0} at {1}", release.Id, release.HtmlUrl);
+            var release = client.CreateRelease(Owner, RepositoryName, BuildReleaseData()).Result;
+            Log.LogMessage("Created Release {0} at {1}", release.TagName, release.HtmlUrl);
             UploadedAssets = UploadAll(client, release, Files);
             foreach (var item in UploadedAssets) Log.LogMessage("Uploaded {0}", item.ItemSpec);
             return true;
@@ -85,6 +83,16 @@ namespace GitTfsTasks
         {
             var uploadedAsset = await client.UploadAsset(release, BuildAssetUpload(sourceItem));
             return TaskItemFor(release, uploadedAsset);
+        }
+
+        private ReleaseUpdate BuildReleaseData()
+        {
+            var release = new ReleaseUpdate(TagName);
+            if (ReleaseNotesFile != null)
+            {
+                release.Description = File.ReadAllText(ReleaseNotesFile.ItemSpec);
+            }
+            return release;
         }
 
         private ReleaseAssetUpload BuildAssetUpload(ITaskItem item)
