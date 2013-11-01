@@ -94,8 +94,11 @@
   </Target>
 
   <!-- Internal: Called by Release to create the release on github.com. -->
+  <ItemGroup>
+    <ReleaseNotes Condition="'$(ReleaseNotes)' != ''" Include="$(ReleaseNotes)" />
+  </ItemGroup>
   <Target Name="UploadToGitHub" DependsOnTargets="VersionRequired; AuthTokenRequired; GitTfsTasks">
-    <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)">
+    <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="@(ReleaseNotes)">
       <Output TaskParameter="UploadedAssets" ItemName="UploadedAssets" />
     </CreateRelease>
     <Message Text="yes! -> @(UploadedAssets)" />
