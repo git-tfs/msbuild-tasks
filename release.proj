@@ -4,16 +4,16 @@
   <PropertyGroup>
     <!-- Where to push the release tag. -->
     <PushUrl>https://github.com/git-tfs/msbuild-tasks.git</PushUrl>
-    
+
     <!-- Where the solution lives, relative to this file. -->
     <SolutionDir>.</SolutionDir>
-    
+
     <!-- Where the build output and its dependencies are built to. -->
     <BuildDir>$(SolutionDir)/GitTfsTasks/bin/Release</BuildDir>
-    
+
     <!-- Yo. -->
     <TargetPlatform>Any CPU</TargetPlatform>
-    
+
     <!-- The file that includes the AssemblyVersionAttribute. -->
     <VersionFilePath>$(SolutionDir)\GitTfsTasks\Properties\Version.cs</VersionFilePath>
 
@@ -22,7 +22,7 @@
 
     <!-- The output zip file. -->
     <Archive>$(PackagedDir)/GitTfsTasks-$(Version).zip</Archive>
-    
+
     <!-- The version tag. -->
     <VersionTag>v$(Version)</VersionTag>
 
@@ -37,7 +37,7 @@
     <ReleaseFiles Include="$(SolutionDir)\NOTICE" />
     <ReleaseFiles Include="$(BuildDir)\*.dll" />
   </ItemGroup>
-  
+
   <!-- The zip. -->
   <ItemGroup>
     <ArchiveFile Include="$(Archive)">
@@ -49,7 +49,7 @@
   <Target Name="MSBuildCommunityTasks"></Target><!-- pseudo-target so we can track things that use MSBuildTasks -->
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.TemplateFile" />
   <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Zip" />
-  
+
   <!-- Internal: Build and load the CreateRelease task. -->
   <Target Name="GitTfsTasks" DependsOnTargets="Build"></Target><!-- Normally, you'd just load it from the dll, without needing to build it too. -->
   <UsingTask TaskName="GitTfsTasks.CreateRelease" AssemblyFile="$(SolutionDir)\GitTfsTasks\bin\Release\GitTfsTasks.dll" />
@@ -89,15 +89,22 @@
   <Target Name="Package" DependsOnTargets="VersionRequired; MSBuildCommunityTasks">
     <Zip Files="@(ReleaseFiles)" ZipFileName="$(Archive)" WorkingDirectory="$(BuildDir)" />
   </Target>
-  
+
   <!-- Internal: Called by Release to create the release on github.com. -->
-  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; GitTfsTasks">
-    <CreateRelease TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" />
+  <Target Name="CreateRelease" DependsOnTargets="VersionRequired; AuthTokenRequired; GitTfsTasks">
+    <CreateRelease Repository="git-tfs/msbuild-tasks" OauthToken="$(GitHubAuthToken)" TagName="$(VersionTag)" Files="@(ArchiveFile)" ReleaseNotesFile="$(ReleaseNotes)" UploadedAssets="@(UploadedAssets)" />
+    <Message Text="@(UploadedAssets)" />
   </Target>
 
   <!-- Private: Exits with error when the Version property is not defined. -->
   <Target Name="VersionRequired">
     <Error Text="You must specify a version number! (/p:Version=X.Y.Z)" Condition="'$(Version)' == ''" />
+  </Target>
+
+  <!-- Private: Exits with error when the GitHubAuthToken property is not defined. -->
+  <Import Project="Auth.targets" />
+  <Target Name="AuthTokenRequired">
+    <Error Text="You must set a github.com auth token in auth.targets (see auth.targets.example)" Condition="'$(GitHubAuthToken)' == ''" />
   </Target>
 
 </Project>

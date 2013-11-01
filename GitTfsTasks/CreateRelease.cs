@@ -32,6 +32,9 @@ namespace GitTfsTasks
         public string Repository { get; set; }
 
         [Required]
+        public string OauthToken { get; set; }
+
+        [Required]
         public string TagName { get; set; }
 
         public ITaskItem[] Files { get; set; }
@@ -45,11 +48,26 @@ namespace GitTfsTasks
 
         private string RepositoryName { get { return Repository.Split('/')[1]; } }
 
+        private ICredentialStore CredentialStore { get { return new InPlaceCredentialStore(OauthToken); } }
+
+        class InPlaceCredentialStore : ICredentialStore
+        {
+            string _token;
+            public InPlaceCredentialStore(string token)
+            {
+                _token = token;
+            }
+            public System.Threading.Tasks.Task<Credentials> GetCredentials()
+            {
+                return new System.Threading.Tasks.Task<Credentials>(() => new Credentials(_token));
+            }
+        }
+
         private ReleaseUpdate ReleaseData { get { return new ReleaseUpdate(TagName); } }
 
         public override bool Execute()
         {
-            var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks")).Release;
+            var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks"), CredentialStore).Release;
             var release = client.CreateRelease(Owner, RepositoryName, ReleaseData).Result;
             Log.LogMessage("Created Release {0} at {1}", release.Id, release.HtmlUrl);
             var assetTasks = new List<System.Threading.Tasks.Task<ReleaseAsset>>();
