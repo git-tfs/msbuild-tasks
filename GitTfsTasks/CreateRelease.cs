@@ -78,7 +78,7 @@ namespace GitTfsTasks
 
         private ITaskItem[] UploadAll(IReleasesClient client, Release release, IEnumerable<ITaskItem> items)
         {
-            return items.Select(item => { Log.LogMessage("Uploading {0}..."); return Upload(client, release, item).Result; }).ToArray();
+            return items.Select(item => { Log.LogMessage("Uploading {0}...", item.ItemSpec); return Upload(client, release, item).Result; }).ToArray();
         }
 
         private async System.Threading.Tasks.Task<ITaskItem> Upload(IReleasesClient client, Release release, ITaskItem sourceItem)
