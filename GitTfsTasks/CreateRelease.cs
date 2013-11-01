@@ -57,9 +57,9 @@ namespace GitTfsTasks
             {
                 _token = token;
             }
-            public System.Threading.Tasks.Task<Credentials> GetCredentials()
+            public async System.Threading.Tasks.Task<Credentials> GetCredentials()
             {
-                return new System.Threading.Tasks.Task<Credentials>(() => new Credentials(_token));
+                return new Credentials(_token);
             }
         }
 
