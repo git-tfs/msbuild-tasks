@@ -18,7 +18,7 @@
     <TargetPlatform>Any CPU</TargetPlatform>
 
     <!-- The file that includes the AssemblyVersionAttribute. -->
-    <VersionFilePath>$(SolutionDir)\GitTfsTasks\Properties\Version.cs</VersionFilePath>
+    <VersionFilePath>$(SolutionDir)\Version.cs</VersionFilePath>
 
     <!-- Where to build the release zip file. -->
     <PackagedDir>$(SolutionDir)/Releases</PackagedDir>
