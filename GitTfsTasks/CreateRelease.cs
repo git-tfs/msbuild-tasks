@@ -23,7 +23,7 @@ namespace GitTfsTasks
     ///   <ReleaseNotesFile Include="MyAwesomeReleaseNotes.md" />
     /// </ItemGroup>
     /// <Target Name="Release">
-    ///   <CreateGitHubRelease Repository="owner/repo" TagName="v0.1.0" Files="@(ReleaseFiles)" ReleaseNotesFile="@(ReleaseNotesFile)" />
+    ///   <CreateRelease Repository="owner/repo" OauthToken="$(GitHubAuthToken)" TagName="v0.1.0" Files="@(ReleaseFiles)" ReleaseNotesFile="$(ReleaseNotesFile)" />
     /// </Target>
     /// ]]></code>
     /// </example>
