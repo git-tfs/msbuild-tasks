@@ -45,6 +45,9 @@ namespace GitTfsTasks
         [Output]
         public ITaskItem[] UploadedAssets { get; private set; }
 
+        [Output]
+        public int IdRelease { get; private set; }
+
         private string Owner { get { return Repository.Split('/')[0]; } }
 
         private string RepositoryName { get { return Repository.Split('/')[1]; } }
@@ -68,6 +71,7 @@ namespace GitTfsTasks
         {
             var client = new GitHubClient(new ProductHeaderValue("GitTfsTasks"), CredentialStore).Release;
             var release = client.CreateRelease(Owner, RepositoryName, BuildReleaseData()).Result;
+            IdRelease = release.Id;
             Log.LogMessage("Created Release {0} at {1}", release.TagName, release.HtmlUrl);
             UploadedAssets = UploadAll(client, release, Files);
             foreach (var item in UploadedAssets) Log.LogMessage("Uploaded {0}", item.ItemSpec);
