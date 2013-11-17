@@ -73,8 +73,11 @@ namespace GitTfsTasks
             var release = client.CreateRelease(Owner, RepositoryName, BuildReleaseData()).Result;
             IdRelease = release.Id;
             Log.LogMessage("Created Release {0} at {1}", release.TagName, release.HtmlUrl);
-            UploadedAssets = UploadAll(client, release, Files);
-            foreach (var item in UploadedAssets) Log.LogMessage("Uploaded {0}", item.ItemSpec);
+            if (Files != null && Files.Length != 0)
+            {
+                UploadedAssets = UploadAll(client, release, Files);
+                foreach (var item in UploadedAssets) Log.LogMessage("Uploaded {0}", item.ItemSpec);
+            }
             return true;
         }
 
